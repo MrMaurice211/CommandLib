@@ -1,20 +1,18 @@
 package io.apexcreations;
 
 import org.bukkit.command.CommandSender;
-import org.bukkit.plugin.Plugin;
 
 public abstract class ApexSubCommand {
+
     private final String name, info, permission;
     private final boolean playerOnly;
     private final String[] aliases;
-    private final Plugin plugin;
 
-    public ApexSubCommand(Plugin plugin, String name, String info, boolean playerOnly) {
-        this(plugin, name, info, "", playerOnly);
+    public ApexSubCommand(String name, String info, boolean playerOnly) {
+        this(name, info, "", playerOnly);
     }
 
-    public ApexSubCommand(Plugin plugin, String name, String info, String permission, boolean playerOnly, String... aliases) {
-        this.plugin = plugin;
+    public ApexSubCommand(String name, String info, String permission, boolean playerOnly, String... aliases) {
         this.name = name;
         this.info = info;
         this.permission = permission;
@@ -42,9 +40,5 @@ public abstract class ApexSubCommand {
 
     public String getPermission() {
         return this.permission;
-    }
-
-    protected Plugin getPlugin() {
-        return this.plugin;
     }
 }

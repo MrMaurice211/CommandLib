@@ -7,12 +7,12 @@ import org.bukkit.command.CommandMap;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.plugin.Plugin;
 
-public class CommandHandler {
+public class CommandHandler<T extends Plugin> {
 
-    private final Plugin plugin;
     private CommandMap commandMap;
+    private T plugin;
 
-    private CommandHandler(Plugin plugin) {
+    private CommandHandler(T plugin) {
         this.plugin = plugin;
         try {
             Field commandMap = plugin.getServer().getClass().getDeclaredField("commandMap");
@@ -59,11 +59,11 @@ public class CommandHandler {
         return result;
     }
 
-    public static CommandHandler init(Plugin plugin) {
-        return new CommandHandler(plugin);
+    public static <T extends Plugin> CommandHandler<T> init(T plugin) {
+        return new CommandHandler<>(plugin);
     }
 
-    public Plugin getPlugin() {
-        return this.plugin;
+    public T getPlugin() {
+        return plugin;
     }
 }

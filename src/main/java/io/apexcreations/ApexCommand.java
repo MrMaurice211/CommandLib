@@ -8,26 +8,23 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
 
 public abstract class ApexCommand extends Command {
 
     private final Map<String, ApexSubCommand> subCommandCache = new HashMap<>();
-    private final Plugin plugin;
     private final boolean playerOnly;
 
-    public ApexCommand(Plugin plugin, String name) {
-        this(plugin, name, false);
+    public ApexCommand(String name) {
+        this(name, false);
     }
 
-    public ApexCommand(Plugin plugin, String name, boolean playerOnly) {
-        this(plugin, name, "Unknown Description", "", playerOnly);
+    public ApexCommand(String name, boolean playerOnly) {
+        this(name, "Unknown Description", "", playerOnly);
     }
 
-    public ApexCommand(Plugin plugin, String name, String description, String permission,
+    public ApexCommand(String name, String description, String permission,
             boolean playerOnly, String... aliases) {
         super(name);
-        this.plugin = plugin;
         this.setDescription(description);
         this.setPermission(permission);
         this.playerOnly = playerOnly;
@@ -70,8 +67,10 @@ public abstract class ApexCommand extends Command {
         return Optional.ofNullable(getSubCommandCache().get(key));
     }
 
-    public void registerSubCommand(ApexSubCommand apexSubCommand) {
-        getSubCommandCache().put(apexSubCommand.getName().toLowerCase(), apexSubCommand);
+    public void registerSubCommand(ApexSubCommand... apexSubCommands) {
+        for (ApexSubCommand apexSubCommand : apexSubCommands) {
+            getSubCommandCache().put(apexSubCommand.getName().toLowerCase(), apexSubCommand);
+        }
     }
 
     public boolean isSubCommand(String key) {
@@ -80,9 +79,5 @@ public abstract class ApexCommand extends Command {
 
     public Map<String, ApexSubCommand> getSubCommandCache() {
         return this.subCommandCache;
-    }
-
-    protected Plugin getPlugin() {
-        return this.plugin;
     }
 }
