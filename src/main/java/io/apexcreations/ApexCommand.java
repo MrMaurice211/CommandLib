@@ -47,15 +47,17 @@ public abstract class ApexCommand extends Command {
 
         if (args.length > 0) {
             Optional<ApexSubCommand> optionalSubCommand = this.getSubCommand(args[0]);
-            optionalSubCommand.ifPresent(subCommand -> {
+            if (optionalSubCommand.isPresent()) {
+                ApexSubCommand subCommand = optionalSubCommand.get();
                 if (!commandSender.hasPermission(subCommand.getPermission())) {
                     commandSender.sendMessage(ChatColor.translateAlternateColorCodes('&',
                             getPermissionMessage()));
-                    return;
+                    return false;
                 }
-                subCommand.execute(commandSender, args);
-            });
-            return true;
+                subCommand.execute(commandSender, args.length == 1 ? new String[0]
+                        : Arrays.copyOfRange(args, 1, args.length));
+                return false;
+            }
         }
         return executeCommand(commandSender, label, args);
     }
@@ -64,7 +66,14 @@ public abstract class ApexCommand extends Command {
             String[] args);
 
     private Optional<ApexSubCommand> getSubCommand(String key) {
-        return Optional.ofNullable(getSubCommandCache().get(key));
+        Optional<ApexSubCommand> optionalKey = Optional.ofNullable(getSubCommandCache().get(key));
+        if (!optionalKey.isPresent()) {
+            return getSubCommandCache().values().stream()
+                    .filter(value -> Arrays.stream(value.getAliases())
+                            .anyMatch(s -> s.equalsIgnoreCase(key))).findFirst().map(Optional::of)
+                    .orElse(optionalKey);
+        }
+        return optionalKey;
     }
 
     public void registerSubCommand(ApexSubCommand... apexSubCommands) {

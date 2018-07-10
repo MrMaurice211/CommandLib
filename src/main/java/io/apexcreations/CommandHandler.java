@@ -1,7 +1,7 @@
 package io.apexcreations;
 
 import java.lang.reflect.Field;
-import java.util.HashMap;
+import java.util.Map;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandMap;
 import org.bukkit.command.PluginCommand;
@@ -39,7 +39,7 @@ public class CommandHandler<T extends Plugin> {
         try {
             Object map = getPrivateField(this.commandMap, "knownCommands");
             @SuppressWarnings("unchecked")
-            HashMap<String, ApexCommand> knownCommands = (HashMap<String, ApexCommand>) map;
+            Map<String, ApexCommand> knownCommands = (Map<String, ApexCommand>) map;
             knownCommands.remove(cmd.getName());
             for (String alias : cmd.getAliases()) {
                 knownCommands.remove(alias);
