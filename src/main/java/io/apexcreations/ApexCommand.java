@@ -39,7 +39,7 @@ public abstract class ApexCommand extends Command {
                     this.getPermissionMessage()));
             return false;
         }
-        if (!commandSender.hasPermission(getPermission())) {
+        if (!getPermission().isEmpty() && !commandSender.hasPermission(getPermission())) {
             commandSender.sendMessage(ChatColor.translateAlternateColorCodes('&',
                     this.getPermissionMessage()));
             return true;
