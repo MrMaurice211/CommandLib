@@ -61,11 +61,11 @@ public abstract class ApexCommand extends Command {
 	public abstract boolean executeCommand(CommandSender commandSender, String label, String[] args);
 
 	private Optional<ApexSubCommand> getSubCommand(String key) {
-		key = key.toLowerCase();
-		Optional<ApexSubCommand> optionalKey = Optional.ofNullable(getSubCommandCache().get(key));
+		String lowKey = key.toLowerCase();
+		Optional<ApexSubCommand> optionalKey = Optional.ofNullable(getSubCommandCache().get(lowKey));
 		if (!optionalKey.isPresent()) {
 			return getSubCommandCache().values().stream()
-					.filter(value -> Arrays.stream(value.getAliases()).anyMatch(s -> s.equalsIgnoreCase(key)))
+					.filter(value -> Arrays.stream(value.getAliases()).anyMatch(s -> s.equalsIgnoreCase(lowKey)))
 					.findFirst().map(Optional::of).orElse(optionalKey);
 		}
 		return optionalKey;

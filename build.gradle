@@ -1,0 +1,20 @@
+apply plugin: 'java'
+apply plugin: 'maven'
+
+group = 'io.apexcreations'
+version "1.1"
+
+description = ""
+
+sourceCompatibility = 8
+targetCompatibility = 8
+
+
+
+repositories {
+  maven { url = 'http://mrmaurice.me:8081/repository/mister-repo/' }
+}
+
+dependencies {
+  compileOnly 'org.spigotmc:spigot:1.12.2-R0.1'
+}
