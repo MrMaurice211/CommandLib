@@ -1,27 +1,30 @@
 language: java
 deploy:
   provider: releases
-  user: "t_ulu_m@live.com.mx"
-  password: $GITHUB_PASS
+  user: t_ulu_m@live.com.mx
+  password: "$GITHUB_PASS"
   file_glob: true
-  file: "build/libs/*.jar"
+  file: build/libs/*.jar
   skip_cleanup: true
   on:
     tags: false
 before_deploy:
-      - git config --local user.name "MrMaurice211"
-      - git config --local user.email "t_ulu_m@live.com.mx"
-      - export GRADLE_PATH=./build.gradle
-      - export GRADLE_FIELD="version"
-      - export VERSION_TMP=$(grep $GRADLE_FIELD $GRADLE_PATH | awk '{print $2}')
-      - export VERSION=$(echo $VERSION_TMP | sed -e 's/^"//'  -e 's/"$//')
-      - export GIT_TAG=$VERSION
-      - git tag $GIT_TAG
+- git config --local user.name "MrMaurice211"
+- git config --local user.email "t_ulu_m@live.com.mx"
+- export GRADLE_PATH=./build.gradle
+- export GRADLE_FIELD="version"
+- export VERSION_TMP=$(grep $GRADLE_FIELD $GRADLE_PATH | awk '{print $2}')
+- export VERSION=$(echo $VERSION_TMP | sed -e 's/^"//'  -e 's/"$//')
+- export GIT_TAG=$VERSION
+- git tag $GIT_TAG
 before_cache:
-  - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
-  - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
+- rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
+- rm -fr $HOME/.gradle/caches/*/plugin-resolution/
 cache:
   directories:
-    - $HOME/.gradle/caches/
-    - $HOME/.gradle/wrapper/
-install: ./gradlew clean assemble
+  - "$HOME/.gradle/caches/"
+  - "$HOME/.gradle/wrapper/"
+install: "./gradlew clean assemble"
+env:
+  global:
+    secure: Imfe5Lk0OgOZ/G8fCHydzuI8YjIF8FZ+7BXAUbtZB23gwTuI5VyQNDYIprBtJZNN1PvH2Lx861AhTKQTGUwJd3blQYG3S51x+bv8FOPseu4ZHu0UYVIpb3+ZtLmzZS77z5ALFiW4BsfwJ8s0fykZFG9I+yQQl2Fbiva1i7N+0DfW16uSVKiUtgPcgPCCK/UVQnibFv+2x9jquDl/drRFFtk9dSQVHYTye4iHOa5VhxUyTLiHkvfI+Xpzr/DQMpwPa3VRJdaFJ7bETEcwPnj3J7LF0BaELyPbyY+ZHdhmtlvbdxu9JIHrGaHLXALpbjm1fmxQMhSu9i3WWCkyb6LfE6lisV+4/Tr74N9jX8pM+7N2BCwylv3SMCXPckgv2QrzC8LJfwshF8ChHmLZKpYSrTsmLWynFqWCurSPZGv8rrHVnOdTX0zfarSiyh8ayWauxNhnqaXmVUQSwLLwLjVbZJKbVdGu9sjd9w0JLS8mlU4tDmHkDQYsIS5Z19Y/HXFfS/wG76grgiWF6sngjeHEK+IrxYNIzn1TJkR4cT5O4fFE0olqKhF7JGagF1dqJxFJNeznCjVyGznMn6IQUoztkHdihcoVBeNeEHCHglZimkMCpM1kJ3AVe7VEciJJVUoLNdh4Sg8tj7erYPHtSzNQyDKxdKve6mRweRJs0pOcbyM=
