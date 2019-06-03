@@ -1,13 +1,4 @@
 language: java
-deploy:
-  provider: releases
-  user: "MrMaurice211"
-  password: "$GITHUB_PASS"
-  file_glob: true
-  file: build/libs/*.jar
-  skip_cleanup: true
-  on:
-    tags: false
 before_deploy:
 - git config --local user.name "MrMaurice211"
 - git config --local user.email "t_ulu_m@live.com.mx"
@@ -25,6 +16,10 @@ cache:
   - "$HOME/.gradle/caches/"
   - "$HOME/.gradle/wrapper/"
 install: "./gradlew clean assemble"
-env:
-  global:
-    secure: Imfe5Lk0OgOZ/G8fCHydzuI8YjIF8FZ+7BXAUbtZB23gwTuI5VyQNDYIprBtJZNN1PvH2Lx861AhTKQTGUwJd3blQYG3S51x+bv8FOPseu4ZHu0UYVIpb3+ZtLmzZS77z5ALFiW4BsfwJ8s0fykZFG9I+yQQl2Fbiva1i7N+0DfW16uSVKiUtgPcgPCCK/UVQnibFv+2x9jquDl/drRFFtk9dSQVHYTye4iHOa5VhxUyTLiHkvfI+Xpzr/DQMpwPa3VRJdaFJ7bETEcwPnj3J7LF0BaELyPbyY+ZHdhmtlvbdxu9JIHrGaHLXALpbjm1fmxQMhSu9i3WWCkyb6LfE6lisV+4/Tr74N9jX8pM+7N2BCwylv3SMCXPckgv2QrzC8LJfwshF8ChHmLZKpYSrTsmLWynFqWCurSPZGv8rrHVnOdTX0zfarSiyh8ayWauxNhnqaXmVUQSwLLwLjVbZJKbVdGu9sjd9w0JLS8mlU4tDmHkDQYsIS5Z19Y/HXFfS/wG76grgiWF6sngjeHEK+IrxYNIzn1TJkR4cT5O4fFE0olqKhF7JGagF1dqJxFJNeznCjVyGznMn6IQUoztkHdihcoVBeNeEHCHglZimkMCpM1kJ3AVe7VEciJJVUoLNdh4Sg8tj7erYPHtSzNQyDKxdKve6mRweRJs0pOcbyM=
+deploy:
+  provider: releases
+  api_key:
+    secure: M3hCT7xErqItf/ecjxShl5mE5HG/d7KMRcZu9FX9NH5h7UytlgqwZHbvXzf0VN+RgtRrLhsEOrLRJS4wOqalTO5Kq3uphSpIZ8uDbyiXA4l+5QFIi16z1/QbEQo5LgSBnbTEx9c8f9sT8PfSH/LotjGL5iLwzeUpEmTZX8SQuCYriZ5VwgSKJTXmWHtx6zMIPkaK8YjRy2uhsN1ybZ6pt7FQjaNJS5Hb9hiwJaeRX5h3iJ1cZa9zEZbcOML7gbcnev9F7Zq8dZVbhWfYWndtW4M4Zf4/n7b5sgaWKftqLx9T/A2GLRDmotZZbvvbFAQ10yjEU3g0EcxZenAjq74azBqXUutPEku2F0ZZe2GGgELa/HleqLh6OX861ql9gDaX71b1SeaYLUaZyx10G1GWLgpsj9P+6ylWritRPpzuK6AYQAvb+hNvhV0Vc7H6F8bAIjQzpa2EL63BAZ0rf0QiXz3iq3ytTcTKebrLGjA+1Ko252+ftQ1hjccfWssQLQvOCQWs/c9JKietW49ZoU7KTa5OsJfZxOiL/BO34PsTOSCFlavRsoJ5GBs1/R6vsJtnP9FG+GuBsoMliZDjFXO7Ut1PAp4/tB01MSKKJq343v4hfeF9NQU2DH9MdJxQquihgIrGIcgdBsO2jpuJ5zhN2+uNVtpEdTpz3KheU+rI8Kk=
+  file: build/libs/*.jar
+  on:
+    repo: MrMaurice211/CommandTest
