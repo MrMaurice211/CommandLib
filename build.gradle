@@ -12,9 +12,9 @@ targetCompatibility = 8
 
 
 repositories {
-  maven { url = 'http://mrmaurice.me:8081/repository/mister-repo/' }
+  maven { url "https://hub.spigotmc.org/nexus/content/repositories/snapshots" }
 }
 
 dependencies {
-  compileOnly 'org.spigotmc:spigot:1.12.2-R0.1'
+  compileOnly 'org.bukkit:bukkit:1.12.2-R0.1-SNAPSHOT'
 }
