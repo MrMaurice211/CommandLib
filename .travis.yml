@@ -7,8 +7,6 @@ deploy:
   skip_cleanup: true
   on:
     tags: false
-jdk:
-  - oraclejdk8
 before_deploy:
       - git config --local user.name "MrMaurice211"
       - git config --local user.email "t_ulu_m@live.com.mx"
