@@ -46,7 +46,8 @@ public abstract class ApexCommand extends Command {
 			Optional<ApexSubCommand> optionalSubCommand = this.getSubCommand(args[0]);
 			if (optionalSubCommand.isPresent()) {
 				ApexSubCommand subCommand = optionalSubCommand.get();
-				if (!commandSender.hasPermission(subCommand.getPermission())) {
+				String permission = subCommand.getPermission();
+				if (!permission.isEmpty() && !commandSender.hasPermission(subCommand.getPermission())) {
 					commandSender.sendMessage(ChatColor.translateAlternateColorCodes('&', getPermissionMessage()));
 					return false;
 				}
