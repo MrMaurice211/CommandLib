@@ -2,7 +2,7 @@ apply plugin: 'java'
 apply plugin: 'maven'
 
 group = 'io.apexcreations'
-version "1.1"
+version "1.2"
 
 repositories {
   maven { url "https://hub.spigotmc.org/nexus/content/repositories/snapshots" }
