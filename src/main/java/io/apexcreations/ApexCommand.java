@@ -33,10 +33,14 @@ public abstract class ApexCommand extends Command {
 
 	@Override
 	public boolean execute(CommandSender commandSender, String label, String[] args) {
-		if (!(commandSender instanceof Player) && this.playerOnly) {
+
+		boolean playerInstance = commandSender instanceof Player;
+
+		if (!playerInstance && this.playerOnly) {
 			commandSender.sendMessage(ChatColor.translateAlternateColorCodes('&', this.getPermissionMessage()));
 			return false;
 		}
+
 		if (!getPermission().isEmpty() && !commandSender.hasPermission(getPermission())) {
 			commandSender.sendMessage(ChatColor.translateAlternateColorCodes('&', this.getPermissionMessage()));
 			return true;
@@ -46,6 +50,10 @@ public abstract class ApexCommand extends Command {
 			Optional<ApexSubCommand> optionalSubCommand = this.getSubCommand(args[0]);
 			if (optionalSubCommand.isPresent()) {
 				ApexSubCommand subCommand = optionalSubCommand.get();
+				if (!playerInstance && this.playerOnly) {
+					commandSender.sendMessage(ChatColor.translateAlternateColorCodes('&', this.getPermissionMessage()));
+					return false;
+				}
 				String permission = subCommand.getPermission();
 				if (!permission.isEmpty() && !commandSender.hasPermission(subCommand.getPermission())) {
 					commandSender.sendMessage(ChatColor.translateAlternateColorCodes('&', getPermissionMessage()));
