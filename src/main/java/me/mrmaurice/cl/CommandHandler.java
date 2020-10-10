@@ -1,4 +1,4 @@
-package io.apexcreations;
+package me.mrmaurice.cl;
 
 import java.lang.reflect.Field;
 import java.util.Map;
@@ -23,9 +23,9 @@ public class CommandHandler<T extends Plugin> {
         }
     }
 
-    public void register(ApexCommand... commands) {
-        for (ApexCommand apexCommand : commands) {
-            commandMap.register(apexCommand.getName(), apexCommand);
+    public void register(LibCommand... commands) {
+        for (LibCommand libCommand : commands) {
+            commandMap.register(libCommand.getName(), libCommand);
         }
     }
 
@@ -39,7 +39,7 @@ public class CommandHandler<T extends Plugin> {
         try {
             Object map = getPrivateField(this.commandMap, "knownCommands");
             @SuppressWarnings("unchecked")
-            Map<String, ApexCommand> knownCommands = (Map<String, ApexCommand>) map;
+            Map<String, LibCommand> knownCommands = (Map<String, LibCommand>) map;
             knownCommands.remove(cmd.getName());
             for (String alias : cmd.getAliases()) {
                 knownCommands.remove(alias);

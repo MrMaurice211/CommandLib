@@ -1,4 +1,4 @@
-package io.apexcreations;
+package me.mrmaurice.cl;
 
 import java.util.*;
 
@@ -9,20 +9,20 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.util.StringUtil;
 
-public abstract class ApexCommand extends Command {
+public abstract class LibCommand extends Command {
 
-	private final Map<String, ApexSubCommand> subCommandCache = new HashMap<>();
+	private final Map<String, LibSubCommand> subCommandCache = new HashMap<>();
 	private final boolean playerOnly;
 
-	public ApexCommand(String name) {
+	public LibCommand(String name) {
 		this(name, false);
 	}
 
-	public ApexCommand(String name, boolean playerOnly) {
+	public LibCommand(String name, boolean playerOnly) {
 		this(name, "Unknown Description", "", playerOnly);
 	}
 
-	public ApexCommand(String name, String description, String permission, boolean playerOnly, String... aliases) {
+	public LibCommand(String name, String description, String permission, boolean playerOnly, String... aliases) {
 		super(name);
 		this.setDescription(description);
 		this.setPermission(permission);
@@ -47,10 +47,10 @@ public abstract class ApexCommand extends Command {
 		}
 
 		if (args.length > 0) {
-			Optional<ApexSubCommand> optionalSubCommand = this.getSubCommand(args[0]);
+			Optional<LibSubCommand> optionalSubCommand = this.getSubCommand(args[0]);
 
 			if (optionalSubCommand.isPresent()) {
-				ApexSubCommand subCommand = optionalSubCommand.get();
+				LibSubCommand subCommand = optionalSubCommand.get();
 
 				String permission = subCommand.getPermission();
 				if (!permission.isEmpty() && !commandSender.hasPermission(permission)) {
@@ -71,10 +71,10 @@ public abstract class ApexCommand extends Command {
 		if(args.length == 1)
 			return StringUtil.copyPartialMatches(args[0], getSubCommandCache().keySet(), Lists.newArrayList());
 		if(args.length > 1) {
-			Optional<ApexSubCommand> optionalSubCommand = this.getSubCommand(args[0]);
+			Optional<LibSubCommand> optionalSubCommand = this.getSubCommand(args[0]);
 
 			if (optionalSubCommand.isPresent()) {
-				ApexSubCommand subCommand = optionalSubCommand.get();
+				LibSubCommand subCommand = optionalSubCommand.get();
 
 				String permission = subCommand.getPermission();
 				if (!permission.isEmpty() && !sender.hasPermission(permission))
@@ -88,9 +88,9 @@ public abstract class ApexCommand extends Command {
 
 	public abstract boolean executeCommand(CommandSender commandSender, String label, String[] args);
 
-	private Optional<ApexSubCommand> getSubCommand(String key) {
+	private Optional<LibSubCommand> getSubCommand(String key) {
 		String lowKey = key.toLowerCase();
-		Optional<ApexSubCommand> optionalKey = Optional.ofNullable(getSubCommandCache().get(lowKey));
+		Optional<LibSubCommand> optionalKey = Optional.ofNullable(getSubCommandCache().get(lowKey));
 		if (!optionalKey.isPresent()) {
 			return getSubCommandCache().values().stream()
 					.filter(value -> Arrays.stream(value.getAliases()).anyMatch(s -> s.equalsIgnoreCase(lowKey)))
@@ -99,9 +99,9 @@ public abstract class ApexCommand extends Command {
 		return optionalKey;
 	}
 
-	public void registerSubCommand(ApexSubCommand... apexSubCommands) {
-		for (ApexSubCommand apexSubCommand : apexSubCommands) {
-			getSubCommandCache().put(apexSubCommand.getName().toLowerCase(), apexSubCommand);
+	public void registerSubCommand(LibSubCommand... libSubCommands) {
+		for (LibSubCommand libSubCommand : libSubCommands) {
+			getSubCommandCache().put(libSubCommand.getName().toLowerCase(), libSubCommand);
 		}
 	}
 
@@ -109,7 +109,7 @@ public abstract class ApexCommand extends Command {
 		return getSubCommandCache().containsKey(key);
 	}
 
-	public Map<String, ApexSubCommand> getSubCommandCache() {
+	public Map<String, LibSubCommand> getSubCommandCache() {
 		return this.subCommandCache;
 	}
 }

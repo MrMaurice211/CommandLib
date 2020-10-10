@@ -1,21 +1,21 @@
-package io.apexcreations;
+package me.mrmaurice.cl;
 
 import com.google.common.collect.Lists;
 import org.bukkit.command.CommandSender;
 
 import java.util.List;
 
-public abstract class ApexSubCommand {
+public abstract class LibSubCommand {
 
     private final String name, info, permission;
     private final boolean playerOnly;
     private final String[] aliases;
 
-    public ApexSubCommand(String name, String info, boolean playerOnly) {
+    public LibSubCommand(String name, String info, boolean playerOnly) {
         this(name, info, "", playerOnly);
     }
 
-    public ApexSubCommand(String name, String info, String permission, boolean playerOnly, String... aliases) {
+    public LibSubCommand(String name, String info, String permission, boolean playerOnly, String... aliases) {
         this.name = name;
         this.info = info;
         this.permission = permission;
