@@ -1,13 +1,13 @@
 package io.apexcreations;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
+
+import com.google.common.collect.Lists;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.util.StringUtil;
 
 public abstract class ApexCommand extends Command {
 
@@ -48,14 +48,12 @@ public abstract class ApexCommand extends Command {
 
 		if (args.length > 0) {
 			Optional<ApexSubCommand> optionalSubCommand = this.getSubCommand(args[0]);
+
 			if (optionalSubCommand.isPresent()) {
 				ApexSubCommand subCommand = optionalSubCommand.get();
-				if (!playerInstance && this.playerOnly) {
-					commandSender.sendMessage(ChatColor.translateAlternateColorCodes('&', this.getPermissionMessage()));
-					return false;
-				}
+
 				String permission = subCommand.getPermission();
-				if (!permission.isEmpty() && !commandSender.hasPermission(subCommand.getPermission())) {
+				if (!permission.isEmpty() && !commandSender.hasPermission(permission)) {
 					commandSender.sendMessage(ChatColor.translateAlternateColorCodes('&', getPermissionMessage()));
 					return false;
 				}
@@ -63,8 +61,29 @@ public abstract class ApexCommand extends Command {
 						args.length == 1 ? new String[0] : Arrays.copyOfRange(args, 1, args.length));
 				return false;
 			}
+
 		}
 		return executeCommand(commandSender, label, args);
+	}
+
+	@Override
+	public List<String> tabComplete(CommandSender sender, String alias, String[] args) throws IllegalArgumentException {
+		if(args.length == 1)
+			return StringUtil.copyPartialMatches(args[0], getSubCommandCache().keySet(), Lists.newArrayList());
+		if(args.length > 1) {
+			Optional<ApexSubCommand> optionalSubCommand = this.getSubCommand(args[0]);
+
+			if (optionalSubCommand.isPresent()) {
+				ApexSubCommand subCommand = optionalSubCommand.get();
+
+				String permission = subCommand.getPermission();
+				if (!permission.isEmpty() && !sender.hasPermission(permission))
+					return Lists.newArrayList();
+
+				return subCommand.onTabComplete(sender, args);
+			}
+		}
+		return Lists.newArrayList();
 	}
 
 	public abstract boolean executeCommand(CommandSender commandSender, String label, String[] args);

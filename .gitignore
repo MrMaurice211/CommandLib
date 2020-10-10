@@ -1,10 +1,24 @@
-*intelliJ
-*.iml
-target/
+# Eclipse
 .classpath
 .project
 .settings/
-.gradle/
 /bin/
-/**/build/*
+
+# Intellij
+.idea
+*.iml
+*.iws
+*.ipr
+
+# Mac
+.DS_Store
+
+# Maven
+log/
+target/
+jars/
+
+# Gradle
+.gradle
 /build/
+/**/build/

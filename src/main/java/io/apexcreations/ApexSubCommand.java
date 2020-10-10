@@ -1,6 +1,9 @@
 package io.apexcreations;
 
+import com.google.common.collect.Lists;
 import org.bukkit.command.CommandSender;
+
+import java.util.List;
 
 public abstract class ApexSubCommand {
 
@@ -21,6 +24,8 @@ public abstract class ApexSubCommand {
     }
 
     public abstract void execute(CommandSender commandSender, String[] args);
+
+    public List<String> onTabComplete(CommandSender sender, String[] args) { return Lists.newArrayList(); }
 
     public boolean isPlayerOnly() {
         return this.playerOnly;
