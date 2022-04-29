@@ -1,16 +1,17 @@
 package me.mrmaurice.cl;
 
-import java.lang.reflect.Field;
-import java.util.Map;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandMap;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.plugin.Plugin;
 
+import java.lang.reflect.Field;
+import java.util.Map;
+
 public class CommandHandler<T extends Plugin> {
 
     private CommandMap commandMap;
-    private T plugin;
+    private final T plugin;
 
     private CommandHandler(T plugin) {
         this.plugin = plugin;
@@ -30,7 +31,7 @@ public class CommandHandler<T extends Plugin> {
     }
 
     public void unregister(String... commands) {
-        for (String command: commands) {
+        for (String command : commands) {
             this.unregisterCommand(Bukkit.getPluginCommand(command));
         }
     }
@@ -66,4 +67,5 @@ public class CommandHandler<T extends Plugin> {
     public T getPlugin() {
         return plugin;
     }
+
 }

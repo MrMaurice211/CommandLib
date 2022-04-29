@@ -1,115 +1,142 @@
 package me.mrmaurice.cl;
 
-import java.util.*;
-
-import com.google.common.collect.Lists;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.util.StringUtil;
+
+import java.util.*;
+import java.util.stream.Collectors;
 
 public abstract class LibCommand extends Command {
 
-	private final Map<String, LibSubCommand> subCommandCache = new HashMap<>();
-	private final boolean playerOnly;
+    private final Map<String, LibCommand> subCommandCache = new HashMap<>();
+    private final boolean playerOnly;
 
-	public LibCommand(String name) {
-		this(name, false);
-	}
+    public LibCommand(String name) {
+        this(name, false);
+    }
 
-	public LibCommand(String name, boolean playerOnly) {
-		this(name, "Unknown Description", "", playerOnly);
-	}
+    public LibCommand(String name, boolean playerOnly) {
+        this(name, "", playerOnly);
+    }
 
-	public LibCommand(String name, String description, String permission, boolean playerOnly, String... aliases) {
-		super(name);
-		this.setDescription(description);
-		this.setPermission(permission);
-		this.playerOnly = playerOnly;
-		this.setAliases(Arrays.asList(aliases));
-		this.setPermissionMessage(ChatColor.RED + "You do not have permission for this command!");
-	}
+    public LibCommand(String name, String description, boolean playerOnly) {
+        this(name, description, "", playerOnly);
+    }
 
-	@Override
-	public boolean execute(CommandSender commandSender, String label, String[] args) {
+    public LibCommand(String name, String description, String permission, boolean playerOnly, String... aliases) {
+        super(name, description, "", Arrays.asList(aliases));
+        this.playerOnly = playerOnly;
+        this.setPermission(permission);
+        this.setPermissionMessage(ChatColor.RED + "You do not have permission for this command!");
+    }
 
-		boolean playerInstance = commandSender instanceof Player;
+    public abstract boolean executeCommand(CommandSender commandSender, String label, String[] args);
 
-		if (!playerInstance && this.playerOnly) {
-			commandSender.sendMessage(ChatColor.translateAlternateColorCodes('&', this.getPermissionMessage()));
-			return false;
-		}
+    public List<String> completeCommand(CommandSender sender, String alias, String[] args) {
+        return Bukkit.getOnlinePlayers()
+                .stream()
+                .map(Player::getName)
+                .sorted(String.CASE_INSENSITIVE_ORDER)
+                .collect(Collectors.toList());
+    }
 
-		if (!getPermission().isEmpty() && !commandSender.hasPermission(getPermission())) {
-			commandSender.sendMessage(ChatColor.translateAlternateColorCodes('&', this.getPermissionMessage()));
-			return true;
-		}
+    private Optional<LibCommand> getSubCommand(String key) {
+        String lowKey = key.toLowerCase();
+        Optional<LibCommand> optionalKey = Optional.ofNullable(getSubCommandCache().get(lowKey));
 
-		if (args.length > 0) {
-			Optional<LibSubCommand> optionalSubCommand = this.getSubCommand(args[0]);
+        if (!optionalKey.isPresent()) {
+            return getSubCommandCache().values()
+                    .stream()
+                    .filter(value -> value.getAliases().stream().anyMatch(s -> s.equalsIgnoreCase(lowKey)))
+                    .findFirst()
+                    .map(Optional::of)
+                    .orElse(optionalKey);
+        }
 
-			if (optionalSubCommand.isPresent()) {
-				LibSubCommand subCommand = optionalSubCommand.get();
+        return optionalKey;
+    }
 
-				String permission = subCommand.getPermission();
-				if (!permission.isEmpty() && !commandSender.hasPermission(permission)) {
-					commandSender.sendMessage(ChatColor.translateAlternateColorCodes('&', getPermissionMessage()));
-					return false;
-				}
-				subCommand.execute(commandSender,
-						args.length == 1 ? new String[0] : Arrays.copyOfRange(args, 1, args.length));
-				return false;
-			}
+    public final void registerSubCommand(LibCommand... libSubCommands) {
+        for (LibCommand libSubCommand : libSubCommands)
+            getSubCommandCache().put(libSubCommand.getName().toLowerCase(), libSubCommand);
+    }
 
-		}
-		return executeCommand(commandSender, label, args);
-	}
+    public final boolean isSubCommand(String key) {
+        return getSubCommandCache().containsKey(key);
+    }
 
-	@Override
-	public List<String> tabComplete(CommandSender sender, String alias, String[] args) throws IllegalArgumentException {
-		if(args.length == 1)
-			return StringUtil.copyPartialMatches(args[0], getSubCommandCache().keySet(), Lists.newArrayList());
-		if(args.length > 1) {
-			Optional<LibSubCommand> optionalSubCommand = this.getSubCommand(args[0]);
+    public final Map<String, LibCommand> getSubCommandCache() {
+        return this.subCommandCache;
+    }
 
-			if (optionalSubCommand.isPresent()) {
-				LibSubCommand subCommand = optionalSubCommand.get();
+    @Override
+    public final boolean execute(CommandSender commandSender, String label, String[] args) {
 
-				String permission = subCommand.getPermission();
-				if (!permission.isEmpty() && !sender.hasPermission(permission))
-					return Lists.newArrayList();
+        boolean playerInstance = commandSender instanceof Player;
 
-				return subCommand.onTabComplete(sender, args);
-			}
-		}
-		return Lists.newArrayList();
-	}
+        if (!playerInstance && this.playerOnly) {
+            commandSender.sendMessage(ChatColor.translateAlternateColorCodes('&', this.getPermissionMessage()));
+            return false;
+        }
 
-	public abstract boolean executeCommand(CommandSender commandSender, String label, String[] args);
+        if (!getPermission().isEmpty() && !commandSender.hasPermission(getPermission())) {
+            commandSender.sendMessage(ChatColor.translateAlternateColorCodes('&', this.getPermissionMessage()));
+            return true;
+        }
 
-	private Optional<LibSubCommand> getSubCommand(String key) {
-		String lowKey = key.toLowerCase();
-		Optional<LibSubCommand> optionalKey = Optional.ofNullable(getSubCommandCache().get(lowKey));
-		if (!optionalKey.isPresent()) {
-			return getSubCommandCache().values().stream()
-					.filter(value -> Arrays.stream(value.getAliases()).anyMatch(s -> s.equalsIgnoreCase(lowKey)))
-					.findFirst().map(Optional::of).orElse(optionalKey);
-		}
-		return optionalKey;
-	}
+        if (args.length > 0) {
+            Optional<LibCommand> optionalSubCommand = this.getSubCommand(args[0]);
 
-	public void registerSubCommand(LibSubCommand... libSubCommands) {
-		for (LibSubCommand libSubCommand : libSubCommands) {
-			getSubCommandCache().put(libSubCommand.getName().toLowerCase(), libSubCommand);
-		}
-	}
+            if (optionalSubCommand.isPresent()) {
+                LibCommand subCommand = optionalSubCommand.get();
 
-	public boolean isSubCommand(String key) {
-		return getSubCommandCache().containsKey(key);
-	}
+                return subCommand.execute(commandSender, label,
+                        args.length == 1 ? new String[0] : Arrays.copyOfRange(args, 1, args.length));
+            }
 
-	public Map<String, LibSubCommand> getSubCommandCache() {
-		return this.subCommandCache;
-	}
+        }
+        return executeCommand(commandSender, label, args);
+    }
+
+    @Override
+    public final List<String> tabComplete(CommandSender sender, String alias, String[] args) throws IllegalArgumentException {
+
+        List<String> allowed = subCommandCache.values()
+                .stream()
+                .filter(sub -> sub.hasPermission(sender))
+                .map(LibCommand::getName)
+                .sorted(String.CASE_INSENSITIVE_ORDER)
+                .collect(Collectors.toList());
+
+        if (args.length == 0)
+            return allowed.isEmpty() ? completeCommand(sender, alias, args) : allowed;
+
+        if (allowed.isEmpty())
+            return completeCommand(sender, alias, args);
+
+        String lastWord = args[0];
+        Optional<LibCommand> optionalSubCommand = this.getSubCommand(lastWord);
+
+        if (optionalSubCommand.isPresent()) {
+            LibCommand subCommand = optionalSubCommand.get();
+
+            if (!subCommand.hasPermission(sender))
+                return completeCommand(sender, alias, args);
+
+            return subCommand.tabComplete(sender, alias, Arrays.copyOfRange(args, 1, args.length));
+        }
+
+        return allowed;
+    }
+
+    public final boolean hasPermission(CommandSender sender) {
+        String permission = getPermission();
+        if (permission == null || permission.trim().isEmpty())
+            return true;
+        return sender.hasPermission(permission);
+    }
+
 }
