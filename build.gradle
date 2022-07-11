@@ -3,7 +3,7 @@ plugins {
     id 'maven-publish'
 }
 
-version = '1.6'
+version = '1.6.1'
 group = 'me.mrmaurice.cl'
 description = 'CommandLib'
 

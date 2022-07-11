@@ -1,10 +1,12 @@
 package me.mrmaurice.cl;
 
+import com.google.common.collect.ImmutableList;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.util.StringUtil;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -36,9 +38,15 @@ public abstract class LibCommand extends Command {
     public abstract boolean executeCommand(CommandSender commandSender, String label, String[] args);
 
     public List<String> completeCommand(CommandSender sender, String alias, String[] args) {
+        if (args.length == 0)
+            return ImmutableList.of();
+
+        String lastWord = args[args.length - 1];
+
         return Bukkit.getOnlinePlayers()
                 .stream()
                 .map(Player::getName)
+                .filter(name -> StringUtil.startsWithIgnoreCase(name, lastWord))
                 .sorted(String.CASE_INSENSITIVE_ORDER)
                 .collect(Collectors.toList());
     }
