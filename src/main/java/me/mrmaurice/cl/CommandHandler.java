@@ -1,6 +1,7 @@
 package me.mrmaurice.cl;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Server;
 import org.bukkit.command.CommandMap;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.plugin.Plugin;
@@ -8,17 +9,16 @@ import org.bukkit.plugin.Plugin;
 import java.lang.reflect.Field;
 import java.util.Map;
 
-public class CommandHandler<T extends Plugin> {
+public class CommandHandler {
 
     private CommandMap commandMap;
-    private final T plugin;
 
-    private CommandHandler(T plugin) {
-        this.plugin = plugin;
+    private CommandHandler() {
         try {
-            Field commandMap = plugin.getServer().getClass().getDeclaredField("commandMap");
+            Server server = Bukkit.getServer();
+            Field commandMap = server.getClass().getDeclaredField("commandMap");
             commandMap.setAccessible(true);
-            this.commandMap = (CommandMap) commandMap.get(Bukkit.getServer());
+            this.commandMap = (CommandMap) commandMap.get(server);
         } catch (IllegalAccessException | NoSuchFieldException e) {
             e.printStackTrace();
         }
@@ -38,7 +38,7 @@ public class CommandHandler<T extends Plugin> {
 
     private void unregisterCommand(PluginCommand cmd) {
         try {
-            Object map = getPrivateField(this.commandMap, "knownCommands");
+            Object map = getKnownCommands(this.commandMap);
             @SuppressWarnings("unchecked")
             Map<String, LibCommand> knownCommands = (Map<String, LibCommand>) map;
             knownCommands.remove(cmd.getName());
@@ -50,22 +50,18 @@ public class CommandHandler<T extends Plugin> {
         }
     }
 
-    private Object getPrivateField(Object object, String field) throws SecurityException,
+    private Object getKnownCommands(Object object) throws SecurityException,
             NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
         Class<?> clazz = object.getClass();
-        Field objectField = clazz.getDeclaredField(field);
+        Field objectField = clazz.getDeclaredField("knownCommands");
         objectField.setAccessible(true);
         Object result = objectField.get(object);
         objectField.setAccessible(false);
         return result;
     }
 
-    public static <T extends Plugin> CommandHandler<T> init(T plugin) {
-        return new CommandHandler<>(plugin);
-    }
-
-    public T getPlugin() {
-        return plugin;
+    public static <T extends Plugin> CommandHandler init() {
+        return new CommandHandler();
     }
 
 }

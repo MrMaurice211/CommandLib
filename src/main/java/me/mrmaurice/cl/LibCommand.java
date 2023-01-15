@@ -51,46 +51,20 @@ public abstract class LibCommand extends Command {
                 .collect(Collectors.toList());
     }
 
-    private Optional<LibCommand> getSubCommand(String key) {
-        String lowKey = key.toLowerCase();
-        Optional<LibCommand> optionalKey = Optional.ofNullable(getSubCommandCache().get(lowKey));
-
-        if (!optionalKey.isPresent()) {
-            return getSubCommandCache().values()
-                    .stream()
-                    .filter(value -> value.getAliases().stream().anyMatch(s -> s.equalsIgnoreCase(lowKey)))
-                    .findFirst()
-                    .map(Optional::of)
-                    .orElse(optionalKey);
-        }
-
-        return optionalKey;
-    }
-
     public final void registerSubCommand(LibCommand... libSubCommands) {
         for (LibCommand libSubCommand : libSubCommands)
-            getSubCommandCache().put(libSubCommand.getName().toLowerCase(), libSubCommand);
-    }
-
-    public final boolean isSubCommand(String key) {
-        return getSubCommandCache().containsKey(key);
-    }
-
-    public final Map<String, LibCommand> getSubCommandCache() {
-        return this.subCommandCache;
+            subCommandCache.put(libSubCommand.getName().toLowerCase(), libSubCommand);
     }
 
     @Override
     public final boolean execute(CommandSender commandSender, String label, String[] args) {
 
-        boolean playerInstance = commandSender instanceof Player;
-
-        if (!playerInstance && this.playerOnly) {
+        if (this.playerOnly && !(commandSender instanceof Player)) {
             commandSender.sendMessage(ChatColor.translateAlternateColorCodes('&', this.getPermissionMessage()));
             return false;
         }
 
-        if (!getPermission().isEmpty() && !commandSender.hasPermission(getPermission())) {
+        if (!hasPermission(commandSender)) {
             commandSender.sendMessage(ChatColor.translateAlternateColorCodes('&', this.getPermissionMessage()));
             return true;
         }
@@ -101,8 +75,7 @@ public abstract class LibCommand extends Command {
             if (optionalSubCommand.isPresent()) {
                 LibCommand subCommand = optionalSubCommand.get();
 
-                return subCommand.execute(commandSender, label,
-                        args.length == 1 ? new String[0] : Arrays.copyOfRange(args, 1, args.length));
+                return subCommand.execute(commandSender, label, Arrays.copyOfRange(args, 1, args.length));
             }
 
         }
@@ -145,6 +118,23 @@ public abstract class LibCommand extends Command {
         if (permission == null || permission.trim().isEmpty())
             return true;
         return sender.hasPermission(permission);
+    }
+
+    private Optional<LibCommand> getSubCommand(String key) {
+        key = key.toLowerCase();
+        Optional<LibCommand> optionalKey = Optional.ofNullable(subCommandCache.get(key));
+
+        if (!optionalKey.isPresent()) {
+            String finalKey = key;
+            return subCommandCache.values()
+                    .stream()
+                    .filter(value -> value.getAliases().stream().anyMatch(s -> s.equalsIgnoreCase(finalKey)))
+                    .findFirst()
+                    .map(Optional::of)
+                    .orElse(optionalKey);
+        }
+
+        return optionalKey;
     }
 
 }
